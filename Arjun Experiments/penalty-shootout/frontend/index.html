@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penalty Shootout 2026</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Main Menu -->
+        <div id="menu" class="screen active">
+            <h1>Penalty Shootout <span class="highlight">2026</span></h1>
+            <div class="menu-options">
+                <button onclick="startGame('solo')" class="btn primary">Solo Mode</button>
+                <button onclick="showMultiplayerMenu()" class="btn secondary">Multiplayer</button>
+                <button onclick="showWorldCupMenu()" class="btn worldcup">World Cup Mode</button>
+            </div>
+        </div>
+
+        <!-- Multiplayer Menu -->
+        <div id="multiplayer-menu" class="screen glass-panel hidden">
+            <h2>Multiplayer</h2>
+            <div class="input-group">
+                <button onclick="createRoom()" class="btn primary">Create Room</button>
+            </div>
+            <div class="divider">OR</div>
+            <div class="input-group">
+                <input type="text" id="room-code-input" placeholder="Enter Room Code" maxlength="4">
+                <button onclick="joinRoom()" class="btn secondary">Join Room</button>
+            </div>
+            <button onclick="showMainMenu()" class="btn back">Back</button>
+        </div>
+
+        <!-- World Cup Menu -->
+        <div id="worldcup-menu" class="screen glass-panel hidden">
+            <h2>Select Your Team</h2>
+            <div id="group-container" class="groups"></div>
+            <button onclick="showMainMenu()" class="btn back">Back</button>
+        </div>
+
+        <!-- World Cup Bracket Menu -->
+        <div id="worldcup-bracket-menu" class="screen glass-panel hidden">
+            <h2 id="wc-stage-title">Group Stage</h2>
+            <div id="wc-knockout-bracket" class="wc-knockout-bracket hidden" aria-hidden="true"></div>
+            <div id="wc-bracket-info" class="wc-bracket-info"></div>
+            <button onclick="playNextWCMatch()" class="btn primary">Play Match</button>
+            <button onclick="showMainMenu()" class="btn back">Quit Tournament</button>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="game-over-menu" class="screen glass-panel hidden">
+            <h2 id="winner-text">Game Over!</h2>
+            <button onclick="postGameAction()" class="btn primary">Continue</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen hidden">
+            <div class="hud">
+                <div class="score-board">
+                    <span id="player1-score">0</span> - <span id="player2-score">0</span>
+                </div>
+                <div id="game-info">Waiting for player...</div>
+                <div id="room-display"></div>
+            </div>
+
+            <div class="stadium">
+                <div class="kick-area" id="kick-area">
+                    <div class="goal-area" id="goal-area">
+                        <div class="goal-net"></div>
+                        <div id="goalkeeper" class="goalkeeper"></div>
+                        <div id="ball" class="ball"></div>
+                        <div id="aim-target" class="aim-target hidden"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="result-overlay" class="overlay hidden">
+                <h1 id="result-text">SCORE!</h1>
+                <button id="next-turn-btn" class="btn primary hidden" onclick="nextTurn()">Next Turn</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="audio.js"></script>
+    <script src="worldcup.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

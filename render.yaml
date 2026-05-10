@@ -1,0 +1,10 @@
+# Repo root Blueprint — build context is the penalty-shootout app folder.
+# https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: penalty-shootout-2026
+    runtime: docker
+    rootDir: "Arjun Experiments/penalty-shootout"
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon

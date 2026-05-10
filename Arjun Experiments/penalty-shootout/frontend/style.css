@@ -1,0 +1,637 @@
+:root {
+    --primary: #00ff88;
+    --primary-glow: rgba(0, 255, 136, 0.5);
+    --secondary: #00d4ff;
+    --dark-bg: #0b0f19;
+    --glass-bg: rgba(20, 25, 40, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-main: #ffffff;
+    --text-dim: #a0aabf;
+    --danger: #ff3366;
+    --worldcup: #ffaa00;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Outfit', sans-serif;
+}
+
+body {
+    background-color: var(--dark-bg);
+    color: var(--text-main);
+    overflow: hidden;
+    background: url('stadium.png') no-repeat center center fixed;
+    background-size: cover;
+}
+
+#app {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+/* Screens */
+.screen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    z-index: 10;
+}
+
+.screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.95);
+}
+
+.hidden {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: scale(0.95);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    width: 90%;
+    max-width: 500px;
+}
+
+h1 {
+    font-size: 4rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 20px rgba(255,255,255,0.2);
+    text-align: center;
+}
+
+h1 .highlight {
+    color: var(--primary);
+    text-shadow: 0 0 20px var(--primary-glow);
+}
+
+h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* Buttons */
+.btn {
+    padding: 16px 32px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    width: 100%;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    height: 300px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.5s;
+}
+
+.btn:active::after {
+    transform: translate(-50%, -50%) scale(1);
+    transition: 0s;
+}
+
+.btn.primary {
+    background: var(--primary);
+    color: #000;
+    box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.btn.primary:hover {
+    box-shadow: 0 0 30px var(--primary-glow);
+    transform: translateY(-2px);
+}
+
+.btn.secondary {
+    background: var(--secondary);
+    color: #000;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+}
+
+.btn.secondary:hover {
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.btn.worldcup {
+    background: linear-gradient(45deg, #ffaa00, #ff3366);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(255, 170, 0, 0.5);
+}
+
+.btn.worldcup:hover {
+    box-shadow: 0 0 30px rgba(255, 170, 0, 0.8);
+    transform: translateY(-2px);
+}
+
+.btn.back {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--text-dim);
+    margin-top: 1rem;
+}
+
+.btn.back:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+}
+
+/* Inputs */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+input[type="text"] {
+    padding: 16px;
+    font-size: 1.5rem;
+    text-align: center;
+    border-radius: 12px;
+    border: 2px solid var(--glass-border);
+    background: rgba(0,0,0,0.3);
+    color: #fff;
+    outline: none;
+    transition: border-color 0.3s;
+    text-transform: uppercase;
+    font-family: monospace;
+    letter-spacing: 4px;
+}
+
+input[type="text"]:focus {
+    border-color: var(--primary);
+}
+
+.divider {
+    text-align: center;
+    margin: 20px 0;
+    color: var(--text-dim);
+    font-weight: 700;
+    position: relative;
+}
+
+.divider::before, .divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: var(--glass-border);
+}
+.divider::before { left: 0; }
+.divider::after { right: 0; }
+
+/* Game Screen */
+#game-screen {
+    justify-content: flex-start;
+}
+
+.hud {
+    width: 100%;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+    z-index: 20;
+}
+
+.score-board {
+    font-size: 3rem;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+#game-info {
+    font-size: 1.5rem;
+    font-weight: 700;
+    padding: 10px 20px;
+    background: var(--glass-bg);
+    border-radius: 20px;
+    border: 1px solid var(--primary);
+    box-shadow: 0 0 15px var(--primary-glow);
+}
+
+#room-display {
+    font-size: 1.2rem;
+    color: var(--text-dim);
+    font-family: monospace;
+}
+
+/* Stadium & Goal */
+.stadium {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    perspective: 1000px;
+}
+
+.kick-area {
+    width: 100vw;
+    height: 600px;
+    position: relative;
+    cursor: crosshair;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.goal-area {
+    width: 800px;
+    height: 400px;
+    position: relative;
+    border: 10px solid #fff;
+    border-bottom: none;
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.2);
+    transition: box-shadow 0.3s ease;
+}
+
+.goal-area.sudden-death {
+    animation: heartbeat 1s infinite alternate;
+}
+
+@keyframes heartbeat {
+    0% { box-shadow: inset 0 0 50px rgba(0,0,0,0.5), 0 0 20px rgba(255, 255, 0, 0.4); }
+    100% { box-shadow: inset 0 0 50px rgba(0,0,0,0.5), 0 0 100px rgba(255, 255, 0, 1), inset 0 0 30px rgba(255, 255, 0, 0.5); }
+}
+
+.goal-net {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+        linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: 1;
+}
+
+/* Entities */
+.goalkeeper {
+    position: absolute;
+    width: 180px;
+    height: 280px;
+    top: 65%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: url('tall_goalkeeper.png') no-repeat center center;
+    background-size: contain;
+    z-index: 5;
+    mix-blend-mode: multiply;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), top 0.4s cubic-bezier(0.25, 1, 0.5, 1), left 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.ball {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    bottom: -80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: url('ball.png') no-repeat center center;
+    background-size: cover;
+    border-radius: 50%;
+    z-index: 10;
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), bottom 0.5s cubic-bezier(0.25, 1, 0.5, 1), width 0.5s, height 0.5s;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+
+.aim-target {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--primary);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 4;
+    animation: pulse 1s infinite alternate;
+    pointer-events: none;
+}
+
+@keyframes pulse {
+    0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.5; }
+    100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+}
+
+/* Result Overlay */
+.overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+#result-text {
+    font-size: 8rem;
+    text-transform: uppercase;
+    animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /* Color will be set by JS */
+}
+
+@keyframes zoomIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* World Cup Groups */
+.groups {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    max-height: 60vh;
+    overflow-y: auto;
+    width: 100%;
+    padding: 10px;
+}
+.group-card {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 15px;
+}
+.group-card h3 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: var(--secondary);
+}
+.team-btn {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 5px;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.team-btn:hover {
+    background: var(--primary);
+    color: #000;
+}
+
+/* World Cup knockout bracket */
+#worldcup-bracket-menu.wc-knockout-layout {
+    max-width: 960px;
+    max-height: 92vh;
+    overflow-y: auto;
+}
+
+.wc-bracket-info {
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.15rem;
+    line-height: 1.5;
+    color: var(--text-dim);
+}
+
+.wc-knockout-bracket {
+    width: 100%;
+    margin-bottom: 1.25rem;
+}
+
+.wc-knockout-bracket.hidden {
+    display: none !important;
+}
+
+.wc-knockout-intro {
+    text-align: center;
+    color: var(--worldcup);
+    font-weight: 800;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.75rem;
+}
+
+.wc-remaining-strip {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px 14px;
+    margin-bottom: 1.5rem;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+}
+
+.wc-strip-team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 64px;
+}
+
+.wc-strip-team .wc-team-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    max-width: 72px;
+    text-align: center;
+    line-height: 1.15;
+}
+
+.wc-strip-team .wc-team-name {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+    max-width: 80px;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.flag-round {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+    background: #1a1f2e;
+}
+
+.flag-round.flag-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 900;
+    color: var(--secondary);
+}
+
+.wc-bracket-rounds {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0;
+    justify-content: center;
+    align-items: stretch;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.wc-bracket-round {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 132px;
+    position: relative;
+    padding: 0 6px;
+}
+
+.wc-bracket-round:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -8px;
+    width: 16px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--worldcup), transparent);
+    opacity: 0.5;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.wc-round-card {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 10px 8px;
+    text-align: center;
+    transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.wc-bracket-round.wc-round-current .wc-round-card {
+    border-color: var(--worldcup);
+    box-shadow: 0 0 18px rgba(255, 170, 0, 0.35);
+}
+
+.wc-bracket-round.wc-round-done .wc-round-card {
+    border-color: rgba(0, 255, 136, 0.35);
+}
+
+.wc-round-title {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+}
+
+.wc-round-match {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.wc-round-side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.wc-round-side span {
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.15;
+    max-width: 110px;
+}
+
+.wc-vs {
+    font-size: 0.65rem;
+    font-weight: 900;
+    color: var(--text-dim);
+    opacity: 0.8;
+}
+
+.wc-round-badge {
+    margin-top: 8px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.wc-round-badge.wc-badge-next {
+    color: var(--secondary);
+}
+
+.wc-round-badge.wc-badge-won {
+    color: var(--primary);
+}
+
+.wc-round-badge.wc-badge-later {
+    color: var(--text-dim);
+    opacity: 0.7;
+}
+
+.wc-group-match-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+
+.wc-group-vs {
+    font-weight: 900;
+    font-size: 1rem;
+    color: var(--worldcup);
+}
