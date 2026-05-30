@@ -3,3 +3,4 @@
 *.pyc
 **/rooms.json
 **/rooms.json.tmp
+backend/.venv/

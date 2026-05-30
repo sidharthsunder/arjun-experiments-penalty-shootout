@@ -115,84 +115,29 @@ class WorldCupTournament {
         return this.currentStageIndex >= KNOCKOUT_START_INDEX;
     }
 
-    getKnockoutSidesRemaining() {
-        const path = [this.selectedTeam];
-        for (let i = KNOCKOUT_START_INDEX; i < this.stages.length; i++) {
-            path.push(this.opponents[i]);
-        }
-        return path;
-    }
-
-    renderKnockoutBracket(container) {
-        const sides = this.getKnockoutSidesRemaining();
-        const stripLabels = ["You", "R32", "R16", "QF", "SF", "Final"];
-        const stripHtml = sides
-            .map((name, i) => {
-                const label = stripLabels[i] || `M${i}`;
-                return `
-                <div class="wc-strip-team">
-                    ${teamFlagImg(name)}
-                    <span class="wc-team-label">${label}</span>
-                    <span class="wc-team-name">${name}</span>
-                </div>`;
-            })
-            .join("");
-
-        const roundsHtml = [];
-        for (let k = 0; k < 5; k++) {
-            const stageIdx = KNOCKOUT_START_INDEX + k;
-            const stage = this.stages[stageIdx];
-            const opp = this.opponents[stageIdx];
-            let roundClass = "wc-bracket-round";
-            let badgeClass = "wc-round-badge";
-            let badgeText = "";
-
-            if (this.currentStageIndex > stageIdx) {
-                roundClass += " wc-round-done";
-                badgeClass += " wc-badge-won";
-                badgeText = "Won";
-            } else if (this.currentStageIndex === stageIdx) {
-                roundClass += " wc-round-current";
-                badgeClass += " wc-badge-next";
-                badgeText = "Next";
-            } else {
-                badgeClass += " wc-badge-later";
-                badgeText = "Later";
-            }
-
-            roundsHtml.push(`
-            <div class="${roundClass}">
-                <div class="wc-round-card">
-                    <div class="wc-round-title">${stage.title}</div>
-                    <div class="wc-round-match">
-                        <div class="wc-round-side">
-                            ${teamFlagImg(this.selectedTeam)}
-                            <span>${this.selectedTeam}</span>
-                        </div>
-                        <div class="wc-vs">vs</div>
-                        <div class="wc-round-side">
-                            ${teamFlagImg(opp)}
-                            <span>${opp}</span>
-                        </div>
-                    </div>
-                    <div class="${badgeClass}">${badgeText}</div>
-                </div>
-            </div>`);
-        }
+    renderUpcomingKnockoutMatch(container) {
+        const stage = this.stages[this.currentStageIndex];
+        const opponent = this.opponents[this.currentStageIndex];
 
         container.innerHTML = `
-            <p class="wc-knockout-intro">Knockout bracket — your path</p>
-            <div class="wc-remaining-strip" title="Sides on your route to the final">
-                ${stripHtml}
-            </div>
-            <div class="wc-bracket-rounds">
-                ${roundsHtml.join("")}
+            <p class="wc-knockout-intro">Upcoming match</p>
+            <div class="wc-upcoming-match">
+                <div class="wc-upcoming-team">
+                    ${teamFlagImg(this.selectedTeam)}
+                    <span class="wc-upcoming-name">${this.selectedTeam}</span>
+                    <span class="wc-upcoming-label">You</span>
+                </div>
+                <div class="wc-vs">vs</div>
+                <div class="wc-upcoming-team">
+                    ${teamFlagImg(opponent)}
+                    <span class="wc-upcoming-name">${opponent}</span>
+                    <span class="wc-upcoming-label">${stage.title}</span>
+                </div>
             </div>
         `;
     }
 
     showBracket() {
-        const menu = document.getElementById("worldcup-bracket-menu");
         const knockoutEl = document.getElementById("wc-knockout-bracket");
         const titleEl = document.getElementById("wc-stage-title");
         const infoEl = document.getElementById("wc-bracket-info");
@@ -201,20 +146,19 @@ class WorldCupTournament {
         const opponent = this.opponents[this.currentStageIndex];
 
         titleEl.innerText = stage.title;
-        menu.classList.toggle("wc-knockout-layout", this.isKnockoutPhase());
 
         if (this.isKnockoutPhase()) {
             knockoutEl.classList.remove("hidden");
             knockoutEl.removeAttribute("aria-hidden");
-            this.renderKnockoutBracket(knockoutEl);
-            infoEl.innerHTML = `Next match: <strong style="color:#fff">${this.selectedTeam}</strong> vs <strong style="color:#fff">${opponent}</strong><br><span style="font-size:0.95rem">Win ${stage.title} to stay alive.</span>`;
+            this.renderUpcomingKnockoutMatch(knockoutEl);
+            infoEl.innerHTML = `<span style="font-size:0.95rem">Difficulty: ${difficultyLabel()} · Win to advance to the next round.</span>`;
         } else {
             knockoutEl.classList.add("hidden");
             knockoutEl.setAttribute("aria-hidden", "true");
             knockoutEl.innerHTML = "";
             let infoText = `<div class="wc-group-match-row">${teamFlagImg(this.selectedTeam)}<span class="wc-group-vs">vs</span>${teamFlagImg(opponent)}</div><br>
                 <strong style="color:#fff;font-size:1.1rem">${this.selectedTeam}</strong> vs <strong style="color:#fff;font-size:1.1rem">${opponent}</strong>`;
-            infoText += `<br><br>Group record: ${this.groupWins} wins — ${this.currentStageIndex - this.groupWins} losses<br><span style="font-size:0.95rem">(Need 2 wins from 3 to reach the knockouts)</span>`;
+            infoText += `<br><br>Group record: ${this.groupWins} wins — ${this.currentStageIndex - this.groupWins} losses<br><span style="font-size:0.95rem">Difficulty: ${difficultyLabel()} · Need 2 wins from 3 to reach the knockouts</span>`;
             infoEl.innerHTML = infoText;
         }
 
@@ -293,7 +237,7 @@ function renderGroups() {
 }
 
 function selectWorldCupTeam(team) {
-    tournament.start(team);
+    showWorldCupDifficulty(team);
 }
 
 function playNextWCMatch() {

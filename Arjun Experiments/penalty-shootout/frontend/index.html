@@ -13,10 +13,31 @@
         <div id="menu" class="screen active">
             <h1>Penalty Shootout <span class="highlight">2026</span></h1>
             <div class="menu-options">
-                <button onclick="startGame('solo')" class="btn primary">Solo Mode</button>
+                <button onclick="showSoloMenu()" class="btn primary">Solo Mode</button>
                 <button onclick="showMultiplayerMenu()" class="btn secondary">Multiplayer</button>
                 <button onclick="showWorldCupMenu()" class="btn worldcup">World Cup Mode</button>
             </div>
+        </div>
+
+        <!-- Solo difficulty -->
+        <div id="solo-menu" class="screen glass-panel hidden">
+            <h2>Solo Mode</h2>
+            <p class="difficulty-hint">Choose AI difficulty</p>
+            <button onclick="startSoloWithDifficulty('easy')" class="btn difficulty easy">Easy</button>
+            <button onclick="startSoloWithDifficulty('medium')" class="btn difficulty medium">Medium</button>
+            <button onclick="startSoloWithDifficulty('hard')" class="btn difficulty hard">Hard</button>
+            <button onclick="showMainMenu()" class="btn back">Back</button>
+        </div>
+
+        <!-- World Cup difficulty (after team pick) -->
+        <div id="worldcup-difficulty-menu" class="screen glass-panel hidden">
+            <h2>World Cup</h2>
+            <p id="wc-difficulty-team" class="difficulty-hint"></p>
+            <p class="difficulty-hint">Choose AI difficulty for the tournament</p>
+            <button onclick="startWorldCupWithDifficulty('easy')" class="btn difficulty easy">Easy</button>
+            <button onclick="startWorldCupWithDifficulty('medium')" class="btn difficulty medium">Medium</button>
+            <button onclick="startWorldCupWithDifficulty('hard')" class="btn difficulty hard">Hard</button>
+            <button onclick="showWorldCupMenu()" class="btn back">Back</button>
         </div>
 
         <!-- Multiplayer Menu -->
@@ -84,6 +105,7 @@
     </div>
 
     <script src="audio.js"></script>
+    <script src="hitbox.js"></script>
     <script src="worldcup.js"></script>
     <script src="script.js"></script>
 </body>

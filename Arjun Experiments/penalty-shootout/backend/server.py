@@ -110,6 +110,22 @@ def create_room_entry(code):
 load_rooms()
 
 
+def is_goalkeeper_save(kick_x, kick_y, gk_x, gk_y):
+    """Match frontend/hitbox.js — ellipse sized to the keeper sprite + ball."""
+    gk_home_x = 0.5
+    gk_half_width = 180 / 800 / 2
+    gk_half_height = 280 / 400 / 2
+    ball_radius = 0.04
+
+    horiz_dive = abs(gk_x - gk_home_x)
+    rx = (gk_half_width + ball_radius) * (1 + horiz_dive * 0.9)
+    ry = gk_half_height + ball_radius
+
+    dx = (kick_x - gk_x) / rx
+    dy = (kick_y - gk_y) / ry
+    return dx * dx + dy * dy <= 1.0
+
+
 def generate_code():
     with rooms_lock:
         for _ in range(100):
@@ -243,21 +259,7 @@ class GameHandler(http.server.SimpleHTTPRequestHandler):
         is_miss = room["kicker_aim"].get("isMiss", False)
         miss_type = room["kicker_aim"].get("missType", "MISS!")
 
-        px, py = kx, ky
-        x1, y1 = gx, gy - 0.30
-        x2, y2 = gx, gy + 0.30
-
-        l2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
-        if l2 == 0:
-            dist = ((px - x1) ** 2 + (py - y1) ** 2) ** 0.5
-        else:
-            t = ((px - x1) * (x2 - x1) + (py - y1) * (y2 - y1)) / l2
-            t = max(0, min(1, t))
-            projX = x1 + t * (x2 - x1)
-            projY = y1 + t * (y2 - y1)
-            dist = ((px - projX) ** 2 + (py - projY) ** 2) ** 0.5
-
-        is_save = dist < 0.15
+        is_save = is_goalkeeper_save(kx, ky, gx, gy)
 
         if is_miss:
             is_save = True

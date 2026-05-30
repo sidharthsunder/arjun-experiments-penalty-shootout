@@ -172,6 +172,40 @@ h2 {
     color: #fff;
 }
 
+.difficulty-hint {
+    text-align: center;
+    color: var(--text-dim);
+    margin-bottom: 1.25rem;
+    font-size: 1.05rem;
+}
+
+.btn.difficulty {
+    text-transform: none;
+    letter-spacing: 0.5px;
+}
+
+.btn.difficulty.easy {
+    background: #3ddc84;
+    color: #000;
+    box-shadow: 0 0 16px rgba(61, 220, 132, 0.45);
+}
+
+.btn.difficulty.medium {
+    background: #ffaa00;
+    color: #000;
+    box-shadow: 0 0 16px rgba(255, 170, 0, 0.45);
+}
+
+.btn.difficulty.hard {
+    background: #ff3366;
+    color: #fff;
+    box-shadow: 0 0 16px rgba(255, 51, 102, 0.45);
+}
+
+.btn.difficulty:hover {
+    transform: translateY(-2px);
+}
+
 /* Inputs */
 .input-group {
     display: flex;
@@ -315,11 +349,42 @@ input[type="text"]:focus {
     top: 65%;
     left: 50%;
     transform: translate(-50%, -50%);
+    transform-origin: 50% 88%;
     background: url('tall_goalkeeper.png') no-repeat center center;
     background-size: contain;
     z-index: 5;
-    mix-blend-mode: multiply;
-    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), top 0.4s cubic-bezier(0.25, 1, 0.5, 1), left 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform, left, top;
+    transition: left 0.35s ease-out, top 0.35s ease-out, transform 0.35s ease-out;
+}
+
+.goalkeeper.gk-diving {
+    transition: none;
+    animation: gkDive 0.52s cubic-bezier(0.22, 0.95, 0.28, 1) forwards;
+}
+
+@keyframes gkDive {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg) scale(1, 1);
+        filter: brightness(1);
+    }
+    10% {
+        /* Settle / push off the line */
+        transform: translate(-50%, calc(-50% + 6px)) rotate(0deg) scale(0.97, 1.03);
+    }
+    22% {
+        /* Explosive launch toward the ball */
+        transform: translate(
+            calc(-50% + var(--gk-dx) * 0.35),
+            calc(-50% + var(--gk-dy) * 0.35)
+        ) rotate(calc(var(--gk-rotate) * 0.45)) scale(1.04, 0.96);
+    }
+    100% {
+        transform: translate(
+            calc(-50% + var(--gk-dx)),
+            calc(-50% + var(--gk-dy))
+        ) rotate(var(--gk-rotate)) scale(var(--gk-scale-x), var(--gk-scale-y));
+        filter: brightness(1.05);
+    }
 }
 
 .ball {
@@ -335,6 +400,28 @@ input[type="text"]:focus {
     z-index: 10;
     transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), bottom 0.5s cubic-bezier(0.25, 1, 0.5, 1), width 0.5s, height 0.5s;
     box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+
+.ball.ball-flying {
+    transition: none;
+    animation: ballFlight 0.58s cubic-bezier(0.15, 0.7, 0.25, 1) forwards;
+    animation-delay: 0.06s;
+}
+
+@keyframes ballFlight {
+    0% {
+        left: 50%;
+        bottom: -80px;
+        transform: translateX(-50%) scale(1);
+    }
+    35% {
+        transform: translateX(-50%) scale(0.72);
+    }
+    100% {
+        left: var(--ball-target-x);
+        bottom: var(--ball-target-y);
+        transform: translateX(-50%) scale(0.5);
+    }
 }
 
 .aim-target {
@@ -448,6 +535,43 @@ input[type="text"]:focus {
     text-transform: uppercase;
     letter-spacing: 0.08em;
     margin-bottom: 0.75rem;
+}
+
+.wc-upcoming-match {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    padding: 1.25rem;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+}
+
+.wc-upcoming-team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 100px;
+}
+
+.wc-upcoming-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    max-width: 120px;
+    line-height: 1.2;
+}
+
+.wc-upcoming-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
 }
 
 .wc-remaining-strip {
