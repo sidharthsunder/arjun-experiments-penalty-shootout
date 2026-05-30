@@ -61,12 +61,21 @@ function startGame(mode, team = null) {
 // --- Multiplayer API Calls ---
 async function createRoom() {
     try {
-        const res = await fetch(`${API_BASE}/create_room`, { method: 'POST', body: JSON.stringify({}) });
+        const res = await fetch(`${API_BASE}/create_room`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+        });
         const data = await res.json();
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
         roomCode = data.code;
         playerId = data.player;
         myRole = data.role;
         currentMode = 'multiplayer';
+        localState = 'aiming';
         
         switchScreen('game-screen');
         roomDisplayEl.innerText = `Room Code: ${roomCode}`;
@@ -94,15 +103,18 @@ async function joinRoom() {
             return;
         }
         
-        roomCode = code;
+        roomCode = data.code;
         playerId = data.player;
         myRole = data.role;
         currentMode = 'multiplayer';
+        localState = 'aiming';
         
         switchScreen('game-screen');
         roomDisplayEl.innerText = `Room Code: ${roomCode}`;
         
         startPolling();
+        // Fetch state immediately so joiner doesn't wait for first poll tick
+        pollRoomState();
     } catch (e) {
         alert("Make sure the backend server is running (same URL as this page).");
     }
@@ -110,22 +122,32 @@ async function joinRoom() {
 
 function startPolling() {
     if (pollInterval) clearInterval(pollInterval);
-    pollInterval = setInterval(async () => {
-        try {
-            const res = await fetch(`${API_BASE}/room_state?code=${roomCode}&player=${playerId}`);
-            const data = await res.json();
-            if (!data.error) {
-                handleServerStateUpdate(data);
-            }
-        } catch (e) {
-            console.error("Polling error", e);
+    pollInterval = setInterval(pollRoomState, 500);
+}
+
+async function pollRoomState() {
+    if (!roomCode || !playerId) return;
+    try {
+        const res = await fetch(
+            `${API_BASE}/room_state?code=${encodeURIComponent(roomCode)}&player=${encodeURIComponent(playerId)}`
+        );
+        const data = await res.json();
+        if (data.error) {
+            gameInfoEl.innerHTML = `<span style="color:#ff3366;">Room not found (${roomCode}). Create a new room — the server may have restarted.</span>`;
+            return;
         }
-    }, 500);
+        handleServerStateUpdate(data);
+    } catch (e) {
+        console.error("Polling error", e);
+        gameInfoEl.innerHTML = '<span style="color:#ff3366;">Connection lost. Retrying...</span>';
+    }
 }
 
 function handleServerStateUpdate(data) {
-    if (data.state === 'waiting') {
-        gameInfoEl.innerText = 'Waiting for opponent...';
+    const playerCount = data.players ? Object.keys(data.players).length : 0;
+
+    if (data.state === 'waiting' || playerCount < 2) {
+        gameInfoEl.innerHTML = `Waiting for opponent...<br><span style="font-size:1rem;color:#a0aabf;">Room ${data.code || roomCode} · ${playerCount}/2 players</span>`;
         return;
     }
 
